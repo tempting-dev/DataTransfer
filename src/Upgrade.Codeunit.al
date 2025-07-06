@@ -79,6 +79,7 @@ codeunit 50101 Upgrade
         TrackingId := RuntimeTracker.StartTracking(StrSubstNo('Initializing Status field for %1 records', TestData.Count()));
         DataTransfer.SetTables(Database::"Test Data", Database::"Test Data");
         DataTransfer.AddConstantValue(DefaultStatus, TestData.FieldNo("Status"));
+        // DataTransfer.UpdateAuditFields(false); //OnPrem only...
         DataTransfer.CopyFields();
         RuntimeTracker.StopTracking(TrackingId);
     end;
