@@ -9,6 +9,7 @@ codeunit 50101 Upgrade
         CopyMyIdToMyId2();
         InitializeStatusField();
         InitializeFieldWithFilters();
+        FillCustomerNoOnDocumentLine();
     end;
 
     local procedure ProcessWithDataTransfer()
@@ -96,6 +97,22 @@ codeunit 50101 Upgrade
         DataTransfer.SetTables(Database::"Test Data", Database::"Test Data");
         DataTransfer.AddConstantValue('Hello World!', TestData.FieldNo("MyTextField2"));
         DataTransfer.AddSourceFilter(TestData.FieldNo("Entry No."), '<%1', 1000);
+        DataTransfer.CopyFields();
+        RuntimeTracker.StopTracking(TrackingId);
+    end;
+
+    local procedure FillCustomerNoOnDocumentLine()
+    var
+        DocumentLine: Record "Document Line";
+        DocumentHeader: Record "Document Header";
+        RuntimeTracker: Codeunit "Runtime Tracker";
+        DataTransfer: DataTransfer;
+        TrackingId: Integer;
+    begin
+        TrackingId := RuntimeTracker.StartTracking(StrSubstNo('Filling Customer No. on %1 Document Lines', DocumentLine.Count()));
+        DataTransfer.SetTables(Database::"Document Header", Database::"Document Line");
+        DataTransfer.AddFieldValue(DocumentHeader.FieldNo("Customer No."), DocumentLine.FieldNo("Customer No."));
+        DataTransfer.AddJoin(DocumentHeader.FieldNo("No."), DocumentLine.FieldNo("Document No."));
         DataTransfer.CopyFields();
         RuntimeTracker.StopTracking(TrackingId);
     end;
